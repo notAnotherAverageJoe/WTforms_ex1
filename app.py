@@ -1,14 +1,13 @@
 """Flask app for adopt app."""
 
 from flask import Flask, url_for, render_template, redirect, flash, jsonify
-
 from flask_debugtoolbar import DebugToolbarExtension
-
-
-toolbar = DebugToolbarExtension(app)
-
 from models import db, connect_db, Pet
 from forms import AddPetForm, EditPetForm
+
+
+
+
 
 app = Flask(__name__)
 
@@ -18,7 +17,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///adopt"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 connect_db(app)
-db.create_all()
+with app.app_context():
+     db.create_all()
 
 # Having the Debug Toolbar show redirects explicitly is often useful;
 # however, if you want to turn it off, you can uncomment this line:
@@ -28,7 +28,7 @@ db.create_all()
 
 
 ##############################################################################
-
+toolbar = DebugToolbarExtension(app)
 
 @app.route("/")
 def list_pets():
@@ -86,3 +86,6 @@ def api_get_pet(pet_id):
     info = {"name": pet.name, "age": pet.age}
 
     return jsonify(info)
+
+if __name__ == '__main__':
+    app.run(debug=True)
